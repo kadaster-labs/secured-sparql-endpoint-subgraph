@@ -10,12 +10,14 @@
 
 
 :applies_to_graph rdf:type owl:ObjectProperty;
+                  rdfs:label "applies_to_graph";
                   rdfs:subPropertyOf owl:topObjectProperty;
                   rdfs:domain :AccessRule;
                   rdfs:range :Graph.
 
 
 :belongs_to_group rdf:type owl:ObjectProperty;
+                  rdfs:label "belongs_to_group";
                   rdfs:subPropertyOf owl:topObjectProperty;
                   rdfs:domain :Role;
                   rdfs:range :SecurityGroup;
@@ -23,12 +25,14 @@
 
 
 :exposes_dataset rdf:type owl:ObjectProperty;
+                 rdfs:label "exposes_dataset";
                  rdfs:subPropertyOf owl:topObjectProperty;
                  rdfs:domain :Endpoint;
                  rdfs:range :Dataset.
 
 
 :has_role rdf:type owl:ObjectProperty;
+          rdfs:label "has_role";
           rdfs:subPropertyOf owl:topObjectProperty;
           rdfs:domain :User;
           rdfs:range :Role;
@@ -36,18 +40,21 @@
 
 
 :has_rule rdf:type owl:ObjectProperty;
+          rdfs:label "has_rule";
           rdfs:subPropertyOf owl:topObjectProperty;
           rdfs:domain :SecurityGroup;
           rdfs:range :AccessRule.
 
 
 :part_of_dataset rdf:type owl:ObjectProperty;
+                 rdfs:label "part_of_dataset";
                  rdfs:subPropertyOf owl:topObjectProperty;
                  rdfs:domain :Graph;
                  rdfs:range :Dataset.
 
 
 :condition rdf:type owl:DatatypeProperty;
+           rdfs:label "condition";
            rdfs:subPropertyOf owl:topDataProperty;
            rdfs:domain :AccessRule;
            rdfs:range xsd:string;
@@ -58,6 +65,7 @@ For example \"?bedrag rdf:type brk:Bedrag. ?perceel brk:laatsteKoopsom ?bedrag.\
 
 
 :subject rdf:type owl:DatatypeProperty;
+         rdfs:subject "subject";
          rdfs:subPropertyOf owl:topDataProperty;
          rdfs:domain :AccessRule;
          rdfs:range xsd:string;
@@ -70,6 +78,7 @@ Was previously named 'precondition' in discussion, but this 'subject' less confu
 
 
 :AccessRule rdf:type owl:Class;
+            rdfs:label "AccessRule";
             rdfs:subClassOf [ rdf:type owl:Restriction;
                               owl:onProperty :subject;
                               owl:cardinality "1"^^xsd:nonNegativeInteger
@@ -81,22 +90,28 @@ Was previously named 'precondition' in discussion, but this 'subject' less confu
             rdfs:comment "An Access Rule defines a section of the graph that is accessible to Users in its Security Group".
 
 
-:Dataset rdf:type owl:Class.
+:Dataset rdf:type owl:Class;
+         rdfs:label "Dataset".
 
 
-:Endpoint rdf:type owl:Class.
+:Endpoint rdf:type owl:Class;
+          rdfs:label "Endpoint".
 
 
-:Graph rdf:type owl:Class.
+:Graph rdf:type owl:Class;
+       rdfs:label "Graph".
 
 
 :Role rdf:type owl:Class;
+      rdfs:label "Role";
       rdfs:comment "In line with the paper by Jajodia et al. (2001) this has been renamed from Persona to Role.".
 
 
 :SecurityGroup rdf:type owl:Class;
+               rdfs:label "SecurityGroup";
                rdfs:comment "A Security Group acts as an intermediary between Roles and Rules to allow clustering of similar access patterns.".
 
 
 :User rdf:type owl:Class;
+      rdfs:label "User";
       rdfs:comment "A User is a natural person or autonomous system wishing to retrieve information from the dataset governed by the described authorisation policy.".
