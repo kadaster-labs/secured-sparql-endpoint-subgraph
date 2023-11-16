@@ -1,14 +1,102 @@
-@base <urn:webprotege:ontology:363becd9-b757-4952-9c5a-c6dcaae2f8c3>.
-@prefix : <urn:webprotege:ontology:363becd9-b757-4952-9c5a-c6dcaae2f8c3#>.
+@base <https://labs.kadaster.nl/unlocked/securedsparqlendpoint/>.
+@prefix : <https://labs.kadaster.nl/unlocked/securedsparqlendpoint/>.
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
-@prefix sse: <https://labs.kadaster.nl/unlocked/securedsparqlendpoint#>.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 
-<urn:webprotege:ontology:363becd9-b757-4952-9c5a-c6dcaae2f8c3> rdf:type owl:Ontology.
+: rdf:type owl:Ontology;
+  owl:versionIRI :0.1.
 
-###  https://labs.kadaster.nl/unlocked/securedsparqlendpoint#AccessiblePredicate
-sse:AccessiblePredicate rdf:type owl:Class;
-                        rdfs:comment "individuals (like properties) are considered accessible predicates"^^xsd:string;
-                        rdfs:label "sse:AccessiblePredicate".
+
+:applies_to_graph rdf:type owl:ObjectProperty;
+                  rdfs:subPropertyOf owl:topObjectProperty;
+                  rdfs:domain :AccessRule;
+                  rdfs:range :Graph.
+
+
+:belongs_to_group rdf:type owl:ObjectProperty;
+                  rdfs:subPropertyOf owl:topObjectProperty;
+                  rdfs:domain :Role;
+                  rdfs:range :SecurityGroup;
+                  rdfs:comment "Associates a role to a Security Group as an intermediary to the relevant Rules".
+
+
+:exposes_dataset rdf:type owl:ObjectProperty;
+                 rdfs:subPropertyOf owl:topObjectProperty;
+                 rdfs:domain :Endpoint;
+                 rdfs:range :Dataset.
+
+
+:has_role rdf:type owl:ObjectProperty;
+          rdfs:subPropertyOf owl:topObjectProperty;
+          rdfs:domain :User;
+          rdfs:range :Role;
+          rdfs:comment "Associates a user with one or more Roles, in accordance with section 2.1.4 of the paper by Jajodia et al. (2001)".
+
+
+:has_rule rdf:type owl:ObjectProperty;
+          rdfs:subPropertyOf owl:topObjectProperty;
+          rdfs:domain :SecurityGroup;
+          rdfs:range :AccessRule.
+
+
+:part_of_dataset rdf:type owl:ObjectProperty;
+                 rdfs:subPropertyOf owl:topObjectProperty;
+                 rdfs:domain :Graph;
+                 rdfs:range :Dataset.
+
+
+:condition rdf:type owl:DatatypeProperty;
+           rdfs:subPropertyOf owl:topDataProperty;
+           rdfs:domain :AccessRule;
+           rdfs:range xsd:string;
+           rdfs:comment """A graph pattern describing what subgraphs the associated Rule should allow access to. Should be one or more TriplesBlocks separated by a period character (.) See the SPARQL 1.1 standard for the definition of a TriplesBlock. Variable bindings should correspond to those in the subject of the Rule.
+
+For example \"?bedrag rdf:type brk:Bedrag. ?perceel brk:laatsteKoopsom ?bedrag.\".""";
+           rdfs:seeAlso "https://www.w3.org/TR/sparql11-query/#rTriplesBlock".
+
+
+:subject rdf:type owl:DatatypeProperty;
+         rdfs:subPropertyOf owl:topDataProperty;
+         rdfs:domain :AccessRule;
+         rdfs:range xsd:string;
+         rdfs:comment """A graph pattern describing what data the associated Rule grants access to. Should be one or more TriplesBlocks separated by a period character (.) See the SPARQL 1.1 standard for the definition of a TriplesBlock. Variable bindings should correspond to those in the condition of the Rule.
+
+For example: \"?bedrag rdf:value ?amount.\".
+
+Was previously named 'precondition' in discussion, but this 'subject' less confusing.""";
+         rdfs:seeAlso "https://www.w3.org/TR/sparql11-query/#rTriplesBlock".
+
+
+:AccessRule rdf:type owl:Class;
+            rdfs:subClassOf [ rdf:type owl:Restriction;
+                              owl:onProperty :subject;
+                              owl:cardinality "1"^^xsd:nonNegativeInteger
+                            ],
+                            [ rdf:type owl:Restriction;
+                              owl:onProperty :condition;
+                              owl:maxCardinality "1"^^xsd:nonNegativeInteger
+                            ];
+            rdfs:comment "An Access Rule defines a section of the graph that is accessible to Users in its Security Group".
+
+
+:Dataset rdf:type owl:Class.
+
+
+:Endpoint rdf:type owl:Class.
+
+
+:Graph rdf:type owl:Class.
+
+
+:Role rdf:type owl:Class;
+      rdfs:comment "In line with the paper by Jajodia et al. (2001) this has been renamed from Persona to Role.".
+
+
+:SecurityGroup rdf:type owl:Class;
+               rdfs:comment "A Security Group acts as an intermediary between Roles and Rules to allow clustering of similar access patterns.".
+
+
+:User rdf:type owl:Class;
+      rdfs:comment "A User is a natural person or autonomous system wishing to retrieve information from the dataset governed by the described authorisation policy.".
