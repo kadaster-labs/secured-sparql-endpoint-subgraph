@@ -1,0 +1,14 @@
+@base <urn:webprotege:ontology:363becd9-b757-4952-9c5a-c6dcaae2f8c3>.
+@prefix : <urn:webprotege:ontology:363becd9-b757-4952-9c5a-c6dcaae2f8c3#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix sse: <https://labs.kadaster.nl/unlocked/securedsparqlendpoint#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+<urn:webprotege:ontology:363becd9-b757-4952-9c5a-c6dcaae2f8c3> rdf:type owl:Ontology.
+
+###  https://labs.kadaster.nl/unlocked/securedsparqlendpoint#AccessiblePredicate
+sse:AccessiblePredicate rdf:type owl:Class;
+                        rdfs:comment "individuals (like properties) are considered accessible predicates"^^xsd:string;
+                        rdfs:label "sse:AccessiblePredicate".
