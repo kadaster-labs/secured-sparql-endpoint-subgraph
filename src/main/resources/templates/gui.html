@@ -1,0 +1,21 @@
+<html>
+<head>
+    <link href="https://unpkg.com/@triply/yasgui/build/yasgui.min.css" rel="stylesheet" type="text/css"/>
+
+    <title>Secured SPARQL Endpoint</title>
+</head>
+<body>
+<div id="yasgui"></div>
+
+<script src="https://unpkg.com/@triply/yasgui/build/yasgui.min.js"></script>
+<script>
+    localStorage.clear();
+    const yasgui = new Yasgui(document.getElementById("yasgui"), {
+        requestConfig: {},
+        copyEndpointOnNewTab: true,
+    });
+
+    console.log(yasgui);
+</script>
+</body>
+</html>
