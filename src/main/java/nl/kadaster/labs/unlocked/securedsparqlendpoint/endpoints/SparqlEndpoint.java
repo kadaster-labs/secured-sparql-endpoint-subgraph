@@ -55,7 +55,9 @@ public class SparqlEndpoint {
             var rule = quad.getSubject();
             var subject = access.find(Node.ANY, rule, NodeFactory.createURI("https://labs.kadaster.nl/unlocked/securedsparqlendpoint/subject"), Node.ANY).next().getObject().getLiteralValue().toString();
             var condition = access.find(Node.ANY, rule, NodeFactory.createURI("https://labs.kadaster.nl/unlocked/securedsparqlendpoint/condition"), Node.ANY).next().getObject().getLiteralValue().toString();
-            var accessQuery = QueryFactory.create("CONSTRUCT {%s} WHERE {%s %s}".formatted(subject, subject, condition));
+            var accessQuery = QueryFactory.create("CONSTRUCT {$subject} WHERE {$subject $condition}"
+                    .replace("$subject",subject)
+                    .replace("$condition", condition));
             try (QueryExecution execution = QueryExecutionFactory.create(accessQuery, dataset.dataOntology)) {
                 var model = execution.execConstruct();
                 log.info("Access rule {} yields {} triples", rule, model.size());
