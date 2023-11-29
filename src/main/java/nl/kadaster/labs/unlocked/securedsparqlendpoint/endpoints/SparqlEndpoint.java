@@ -39,6 +39,8 @@ public class SparqlEndpoint {
     }
 
     private String query(String datasetName, String queryString) {
+        log.info("Query submitted [{}]", queryString.replace("\n", ""));
+
         var dataset = this.datasets.get(datasetName)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dataset not found"));
         var access = dataset.accessOntology
@@ -58,7 +60,7 @@ public class SparqlEndpoint {
             var subject = access.find(Node.ANY, rule, NodeFactory.createURI("https://labs.kadaster.nl/unlocked/securedsparqlendpoint/subject"), Node.ANY).next().getObject().getLiteralValue().toString();
             var condition = access.find(Node.ANY, rule, NodeFactory.createURI("https://labs.kadaster.nl/unlocked/securedsparqlendpoint/condition"), Node.ANY).next().getObject().getLiteralValue().toString();
             var accessQuery = QueryFactory.create("CONSTRUCT {$subject} WHERE {$subject $condition}"
-                    .replace("$subject",subject)
+                    .replace("$subject", subject)
                     .replace("$condition", condition));
             try (QueryExecution execution = QueryExecutionFactory.create(accessQuery, dataset.dataOntology)) {
                 var model = execution.execConstruct();
