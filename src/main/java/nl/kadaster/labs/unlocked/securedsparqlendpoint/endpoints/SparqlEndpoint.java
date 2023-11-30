@@ -38,7 +38,7 @@ public class SparqlEndpoint {
     }
 
     private String query(String datasetName, String queryString) {
-        log.info("Query submitted [{}]", queryString.replace("\n", ""));
+        log.info("Query submitted [{}]", queryString.replace("\n", " "));
 
         var dataset = this.datasets.get(datasetName)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dataset not found"));
@@ -63,7 +63,7 @@ public class SparqlEndpoint {
                     .replace("$condition", condition));
             try (QueryExecution execution = QueryExecutionFactory.create(accessQuery, dataset.dataOntology)) {
                 var model = execution.execConstruct();
-                log.info("Access rule {} yields {} triples", rule, model.size());
+                log.debug("Access rule {} yields {} triples", rule, model.size());
                 subgraph.add(model);
             }
         });
