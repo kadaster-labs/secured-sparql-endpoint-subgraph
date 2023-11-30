@@ -2,6 +2,7 @@ package nl.kadaster.labs.unlocked.securedsparqlendpoint.endpoints;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.kadaster.labs.unlocked.securedsparqlendpoint.repositories.DatasetRepository;
+import nl.kadaster.labs.unlocked.securedsparqlendpoint.util.OutputStreamUtil;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.QueryExecution;
@@ -15,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.io.ByteArrayOutputStream;
 
 @Slf4j
 @RestController
@@ -79,38 +78,29 @@ public class SparqlEndpoint {
     private String buildResponse(QueryExecution execution) {
         var query = execution.getQuery();
         if (query.isAskType()) {
-            var result = execution.execAsk();
             return """
                     <?xml version="1.0"?>
                     <sparql xmlns="http://www.w3.org/2005/sparql-results#">
                     <head></head>
                     <boolean>$result</boolean>
-                    </sparql>""".replace("$result", result ? "true" : "false");
-        } else if (query.isConstructType()) {
-            var result = execution.execConstruct();
-            var output = new ByteArrayOutputStream();
-            RDFWriter.create()
-                    .source(result)
-                    .lang(Lang.TRIG)
-                    .output(output);
-
-            return output.toString();
-        } else if (query.isDescribeType()) {
-            var result = execution.execDescribe();
-            var output = new ByteArrayOutputStream();
-            RDFWriter.create()
-                    .source(result)
-                    .lang(Lang.TRIG)
-                    .output(output);
-
-            return output.toString();
+                    </sparql>""".replace("$result", execution.execAsk() ? "true" : "false");
         } else if (query.isSelectType()) {
-            var result = execution.execSelect();
-            var output = new ByteArrayOutputStream();
-            ResultSetFormatter.outputAsJSON(output, result);
-            return output.toString();
+            return OutputStreamUtil.capture(output -> ResultSetFormatter.outputAsJSON(output, execution.execSelect()));
+        }
+
+        var writer = RDFWriter.create();
+
+        // TODO negotiate language
+        writer.lang(Lang.TRIG);
+
+        if (query.isConstructType()) {
+            writer.source(execution.execConstruct());
+        } else if (query.isDescribeType()) {
+            writer.source(execution.execDescribe());
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Query method isn't implemented yet");
         }
+
+        return OutputStreamUtil.capture(writer::output);
     }
 }
