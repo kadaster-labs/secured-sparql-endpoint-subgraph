@@ -1,5 +1,5 @@
 @base <https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/>.
-@prefix : <https://data.kkg.kadaster.nl/authorisation/model#>.
+@prefix : <https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/>.
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
