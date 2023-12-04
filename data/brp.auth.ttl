@@ -1,0 +1,23 @@
+@prefix policy: <https://labs.kadaster.nl/unlocked/data/brp.auth#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix sse: <https://labs.kadaster.nl/unlocked/securedsparqlendpoint/>.
+
+policy:public_types_access_rule a sse:AccessRule;
+    rdfs:comment "Node types zijn altijd toegankelijk";
+    sse:subject "?node <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type.";
+    sse:condition "".
+
+policy:names_access_rule a sse:AccessRule;
+    rdfs:comment "Persoonsnamen zijn toegankelijk";
+    sse:subject "?persoon <https://brp.nl/def/brp#voornaam> ?voornaam; <https://brp.nl/def/brp#roepnaam> ?roepnaam; <https://brp.nl/def/brp#achternaam> ?achternaam.";
+    sse:condition "?persoon <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://brp.nl/def/brp#Persoon>.".
+
+#policy:residence_south_holland_access_rule a sse:AccessRule;
+#    rdfs:comment "De woonplaats van personen in Zuid Holland zijn toegankelijk"
+#    sse:subject "?persoon <https://brp.nl/def/brp#geboorteplaats> ?plaats; <https://brp.nl/def/brp#geboorteprovincie> ?provincie.";
+#    sse:condition "?persoon <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://brp.nl/def/brp#Persoon>; <https://brp.nl/def/brp#geboorteprovincie> \"Zuid-Holland\"."
+
+#policy:all_access_rule a sse:AccessRule;
+#    rdfs:comment "Alle persoonsgegevens zijn toegankelijk"
+#    sse:subject "?persoon ?predicate ?object."
+#    sse:condition "?persoon <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://brp.nl/def/brp#Persoon>.".
