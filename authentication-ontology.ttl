@@ -1,0 +1,25 @@
+@base <https://data.federatief.datastelsel.nl/lock-unlock/authentication/model/def/>.
+@prefix : <https://data.kkg.kadaster.nl/authorisation/model#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+: rdf:type owl:Ontology;
+  owl:versionIRI :0.1.1.
+
+:has_role rdf:type owl:ObjectProperty;
+          rdfs:label "has_role";
+          rdfs:subPropertyOf owl:topObjectProperty;
+          rdfs:domain :User;
+          rdfs:range :Role;
+          rdfs:comment "Associates a user with one or more Roles, in accordance with section 2.1.4 of the paper by Jajodia et al. (2001)".
+
+:Role rdf:type owl:Class;
+      rdfs:label "Role";
+      rdfs:comment "In line with the paper by Jajodia et al. (2001) this has been renamed from Persona to Role.".
+
+
+:User rdf:type owl:Class;
+      rdfs:label "User";
+      rdfs:comment "A User is a natural person or autonomous system wishing to retrieve information from the dataset governed by the described authorisation policy.".
