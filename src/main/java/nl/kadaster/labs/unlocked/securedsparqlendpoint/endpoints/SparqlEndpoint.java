@@ -8,6 +8,7 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QueryParseException;
 import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
@@ -72,6 +73,9 @@ public class SparqlEndpoint {
 
         try (QueryExecution execution = QueryExecutionFactory.create(query, subgraph)) {
             return this.buildResponse(execution);
+        } catch (QueryParseException exception) {
+            log.info("Query cannot be parsed");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid query");
         }
     }
 
