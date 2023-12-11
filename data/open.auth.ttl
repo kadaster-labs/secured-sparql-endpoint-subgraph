@@ -1,0 +1,8 @@
+@prefix policy: <https://labs.kadaster.nl/unlocked/data/brp.auth#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix sse: <https://labs.kadaster.nl/unlocked/securedsparqlendpoint/>.
+
+policy:everything_open a sse:AccessRule;
+    rdfs:comment "Alles is toegankelijk";
+    sse:subject "?s ?p ?o.";
+    sse:condition "".

@@ -8,11 +8,11 @@ import org.apache.jena.tdb.TDBFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Optional;
 
 @Slf4j
 public class Dataset {
     public static final String AUTHORISATION_ONTOLOGY_INFIX = ".auth";
+    public static final DatasetGraph OPEN_AUTHORISATION_POLICY = Dataset.load(Path.of("data/open.auth.ttl"));
 
     private static DatasetGraph load(Path path) {
         var dataset = TDBFactory.createDataset().asDatasetGraph();
@@ -21,7 +21,7 @@ public class Dataset {
     }
 
     public final String name;
-    public final Optional<DatasetGraph> accessOntology;
+    public final DatasetGraph accessOntology;
     public final DatasetGraph dataOntology;
 
     public Dataset(Path path) throws IOException {
@@ -31,12 +31,12 @@ public class Dataset {
         filename = filename.substring(0, filename.lastIndexOf('.'));
         this.name = filename;
 
-        this.accessOntology = GlobUtil
-                .findFirst(path.getParent(), this.name + AUTHORISATION_ONTOLOGY_INFIX + ".*")
-                .map(Dataset::load);
-
-        if (this.accessOntology.isEmpty()) {
-            log.warn("Ontology [{}] has no authorisation policy", filename);
+        var authPath = GlobUtil.findFirst(path.getParent(), this.name + AUTHORISATION_ONTOLOGY_INFIX + ".*");
+        if (authPath.isPresent()) {
+            this.accessOntology = Dataset.load(authPath.get());
+        } else {
+            log.warn("Ontology [{}] has no authorisation policy, using open authorisation policy", this.name);
+            this.accessOntology = OPEN_AUTHORISATION_POLICY;
         }
     }
 }

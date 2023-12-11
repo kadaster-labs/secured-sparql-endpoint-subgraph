@@ -43,22 +43,20 @@ public class SparqlEndpoint {
 
         var dataset = this.datasets.get(datasetName)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dataset not found"));
-        var access = dataset.accessOntology
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Dataset has no authorisation policy defined"));
         var query = QueryFactory.create(queryString);
         if (query.isUnknownType()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown query type");
 
         var subgraph = ModelFactory.createDefaultModel();
 
-        access.find(
+        dataset.accessOntology.find(
                 Node.ANY,
                 Node.ANY,
                 NodeFactory.createURI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                 NodeFactory.createURI("https://labs.kadaster.nl/unlocked/securedsparqlendpoint/AccessRule")
         ).forEachRemaining(quad -> {
             var rule = quad.getSubject();
-            var subject = access.find(Node.ANY, rule, NodeFactory.createURI("https://labs.kadaster.nl/unlocked/securedsparqlendpoint/subject"), Node.ANY).next().getObject().getLiteralValue().toString();
-            var condition = access.find(Node.ANY, rule, NodeFactory.createURI("https://labs.kadaster.nl/unlocked/securedsparqlendpoint/condition"), Node.ANY).next().getObject().getLiteralValue().toString();
+            var subject = dataset.accessOntology.find(Node.ANY, rule, NodeFactory.createURI("https://labs.kadaster.nl/unlocked/securedsparqlendpoint/subject"), Node.ANY).next().getObject().getLiteralValue().toString();
+            var condition = dataset.accessOntology.find(Node.ANY, rule, NodeFactory.createURI("https://labs.kadaster.nl/unlocked/securedsparqlendpoint/condition"), Node.ANY).next().getObject().getLiteralValue().toString();
             var accessQuery = QueryFactory.create("CONSTRUCT {$subject} WHERE {$subject $condition}"
                     .replace("$subject", subject)
                     .replace("$condition", condition));
