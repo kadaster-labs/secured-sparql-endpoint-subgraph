@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: yesolutions/mirror-action@0.7.0
+      - uses: yesolutions/mirror-action@v0.7.0
         with:
           REMOTE: 'ssh://git@git-ssh.dev.cloud.kadaster.nl:443/dst/dst-secured-sparql-endpoint-mirror.git'
           GIT_SSH_PRIVATE_KEY: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
