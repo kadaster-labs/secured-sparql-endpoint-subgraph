@@ -52,11 +52,11 @@ public class SparqlEndpoint {
                 Node.ANY,
                 Node.ANY,
                 NodeFactory.createURI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                NodeFactory.createURI("https://labs.kadaster.nl/unlocked/securedsparqlendpoint/AccessRule")
+                NodeFactory.createURI("https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/AccessRule")
         ).forEachRemaining(quad -> {
             var rule = quad.getSubject();
-            var subject = dataset.accessOntology.find(Node.ANY, rule, NodeFactory.createURI("https://labs.kadaster.nl/unlocked/securedsparqlendpoint/subject"), Node.ANY).next().getObject().getLiteralValue().toString();
-            var condition = dataset.accessOntology.find(Node.ANY, rule, NodeFactory.createURI("https://labs.kadaster.nl/unlocked/securedsparqlendpoint/condition"), Node.ANY).next().getObject().getLiteralValue().toString();
+            var subject = dataset.accessOntology.find(Node.ANY, rule, NodeFactory.createURI("https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/subject"), Node.ANY).next().getObject().getLiteralValue().toString();
+            var condition = dataset.accessOntology.find(Node.ANY, rule, NodeFactory.createURI("https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/condition"), Node.ANY).next().getObject().getLiteralValue().toString();
             var accessQuery = QueryFactory.create("CONSTRUCT {$subject} WHERE {$subject $condition}"
                     .replace("$subject", subject)
                     .replace("$condition", condition));

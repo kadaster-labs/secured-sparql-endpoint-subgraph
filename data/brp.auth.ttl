@@ -1,6 +1,6 @@
 @prefix policy: <https://labs.kadaster.nl/unlocked/data/brp.auth#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix sse: <https://labs.kadaster.nl/unlocked/securedsparqlendpoint/>.
+@prefix sse: <https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/>.
 
 policy:public_types_access_rule a sse:AccessRule;
     rdfs:comment "Node types zijn altijd toegankelijk";
