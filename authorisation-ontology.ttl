@@ -1,21 +1,23 @@
-@base <https://labs.kadaster.nl/unlocked/securedsparqlendpoint/>.
-@prefix : <https://labs.kadaster.nl/unlocked/securedsparqlendpoint/>.
+@base <https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/>.
+@prefix : <https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/>.
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 
 : rdf:type owl:Ontology;
-  owl:versionIRI :0.1.
+  owl:versionIRI :0.1.1.
 
 
 :applies_to_graph rdf:type owl:ObjectProperty;
+                  rdfs:label "applies_to_graph";
                   rdfs:subPropertyOf owl:topObjectProperty;
                   rdfs:domain :AccessRule;
                   rdfs:range :Graph.
 
 
 :belongs_to_group rdf:type owl:ObjectProperty;
+                  rdfs:label "belongs_to_group";
                   rdfs:subPropertyOf owl:topObjectProperty;
                   rdfs:domain :Role;
                   rdfs:range :SecurityGroup;
@@ -23,31 +25,28 @@
 
 
 :exposes_dataset rdf:type owl:ObjectProperty;
+                 rdfs:label "exposes_dataset";
                  rdfs:subPropertyOf owl:topObjectProperty;
                  rdfs:domain :Endpoint;
                  rdfs:range :Dataset.
 
 
-:has_role rdf:type owl:ObjectProperty;
-          rdfs:subPropertyOf owl:topObjectProperty;
-          rdfs:domain :User;
-          rdfs:range :Role;
-          rdfs:comment "Associates a user with one or more Roles, in accordance with section 2.1.4 of the paper by Jajodia et al. (2001)".
-
-
 :has_rule rdf:type owl:ObjectProperty;
+          rdfs:label "has_rule";
           rdfs:subPropertyOf owl:topObjectProperty;
           rdfs:domain :SecurityGroup;
           rdfs:range :AccessRule.
 
 
 :part_of_dataset rdf:type owl:ObjectProperty;
+                 rdfs:label "part_of_dataset";
                  rdfs:subPropertyOf owl:topObjectProperty;
                  rdfs:domain :Graph;
                  rdfs:range :Dataset.
 
 
 :condition rdf:type owl:DatatypeProperty;
+           rdfs:label "condition";
            rdfs:subPropertyOf owl:topDataProperty;
            rdfs:domain :AccessRule;
            rdfs:range xsd:string;
@@ -58,6 +57,7 @@ For example \"?bedrag rdf:type brk:Bedrag. ?perceel brk:laatsteKoopsom ?bedrag.\
 
 
 :subject rdf:type owl:DatatypeProperty;
+         rdfs:subject "subject";
          rdfs:subPropertyOf owl:topDataProperty;
          rdfs:domain :AccessRule;
          rdfs:range xsd:string;
@@ -70,6 +70,7 @@ Was previously named 'precondition' in discussion, but this 'subject' less confu
 
 
 :AccessRule rdf:type owl:Class;
+            rdfs:label "AccessRule";
             rdfs:subClassOf [ rdf:type owl:Restriction;
                               owl:onProperty :subject;
                               owl:cardinality "1"^^xsd:nonNegativeInteger
@@ -81,22 +82,24 @@ Was previously named 'precondition' in discussion, but this 'subject' less confu
             rdfs:comment "An Access Rule defines a section of the graph that is accessible to Users in its Security Group".
 
 
-:Dataset rdf:type owl:Class.
+:Dataset rdf:type owl:Class;
+         rdfs:label "Dataset".
 
 
-:Endpoint rdf:type owl:Class.
+:Endpoint rdf:type owl:Class;
+          rdfs:label "Endpoint".
 
 
-:Graph rdf:type owl:Class.
+:Graph rdf:type owl:Class;
+       rdfs:label "Graph".
 
 
 :Role rdf:type owl:Class;
+      rdfs:label "Role";
       rdfs:comment "In line with the paper by Jajodia et al. (2001) this has been renamed from Persona to Role.".
 
 
 :SecurityGroup rdf:type owl:Class;
+               rdfs:label "SecurityGroup";
                rdfs:comment "A Security Group acts as an intermediary between Roles and Rules to allow clustering of similar access patterns.".
 
-
-:User rdf:type owl:Class;
-      rdfs:comment "A User is a natural person or autonomous system wishing to retrieve information from the dataset governed by the described authorisation policy.".
