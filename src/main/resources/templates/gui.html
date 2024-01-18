@@ -4,19 +4,89 @@
     <link href="https://unpkg.com/@triply/yasgui/build/yasgui.min.css" rel="stylesheet" type="text/css"/>
 
     <title>Secured SPARQL Endpoint</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
 <div id="yasgui"></div>
 
+<div
+        class="fixed top-2 right-2 w-80 z-50" x-data="{open: false, selected: 'h_de_vries'}"
+        x-init="setPersona(selected); $watch('selected', persona => setPersona(persona))"
+>
+    <button
+            class="relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6"
+            @click="open = true"
+            @click.outside="open = false"
+    >
+        <divl class="inline-flex w-full truncate">
+            <span class="truncate" x-text="users[selected][0]"></span>
+            <span class="ml-2 truncate text-gray-500" x-text="users[selected][1]"></span>
+        </divl>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd"
+                      d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z"
+                      clip-rule="evenodd"/>
+            </svg>
+        </div>
+    </button>
+
+    <ul
+            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+            x-show="open"
+            x-transition
+    >
+        <template x-for="(user, uname) in window.users" :key="uname">
+            <li
+                    class="text-gray-900 relative cursor-pointer select-none py-2 pl-3 pr-9 transition-colors hover:bg-indigo-100"
+                    @click="selected = uname"
+            >
+                <div class="flex">
+                    <span
+                            class="font-normal truncate"
+                            :class="selected === uname ? 'font-semibold' : 'font-normal'"
+                            x-text="user[0]"
+                    ></span>
+                    <span class="text-gray-500 ml-2 truncate" x-text="user[1]"></span>
+                </div>
+                <div class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4"
+                     x-show="uname === selected">
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                              d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                </div>
+            </li>
+        </template>
+    </ul>
+</div>
+
 <script src="https://unpkg.com/@triply/yasgui/build/yasgui.min.js"></script>
 <script>
     localStorage.clear();
-    const yasgui = new Yasgui(document.getElementById("yasgui"), {
+    window.yasgui = new Yasgui(document.getElementById("yasgui"), {
         requestConfig: {},
         copyEndpointOnNewTab: true,
     });
 
-    console.log(yasgui);
+    window.users = {
+        h_de_vries: ["Henk de Vries", "Anonieme gebruiker"],
+        j_jansen: ["Jessica Jansen", "Ingelogde gebruiker"],
+        j_peerenboom: ["Jeroen Peerenboom", "Gemeente Apeldoorn"],
+        m_groen: ["Marjolein Groen", "Gemeente Zeewolde"],
+        f_van_as: ["Ferdinand van As", "Politieonderzoeker"],
+    }
+
+    function setPersona(persona) {
+        for (const tabName in yasgui._tabs) {
+            let query = yasgui._tabs[tabName].getQuery()
+                .replace(/ ?#persona.*\n/g, '') // Remove old persona
+            yasgui._tabs[tabName].setQuery(`#persona_${persona}\n${query}`)
+        }
+    }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>
