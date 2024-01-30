@@ -71,6 +71,10 @@
         copyEndpointOnNewTab: true,
     });
 
+    for (const tabName in yasgui._tabs) {
+        yasgui._tabs[tabName].setEndpoint(location.origin + '/brk/sparql')
+    }
+
     window.users = {
         h_de_vries: ["Henk de Vries", "Anonieme gebruiker"],
         j_jansen: ["Jessica Jansen", "Ingelogde gebruiker"],
