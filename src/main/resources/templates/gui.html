@@ -12,7 +12,7 @@
 
 <div
         class="fixed top-2 right-2 w-80 z-50" x-data="{open: false, selected: 'h_de_vries'}"
-        x-init="setPersona(selected); $watch('selected', persona => setPersona(persona))"
+        x-init="setPersona(selected); $watch('selected', (newPersona, oldPersona) => setPersona(newPersona, oldPersona))"
 >
     <button
             class="relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6"
@@ -83,12 +83,20 @@
         f_van_as: ["Ferdinand van As", "Politieonderzoeker"],
     }
 
-    function setPersona(persona) {
+    function setPersona(newPersona, oldPersona) {
         for (const tabName in yasgui._tabs) {
-            let url = new URL(yasgui._tabs[tabName].getEndpoint());
-            url.searchParams.set("persona", persona);
-            yasgui._tabs[tabName].setEndpoint(url.toString());
-            // TODO this doesn't handle service-clauses
+            const tab = yasgui._tabs[tabName];
+
+            let url = new URL(tab.getEndpoint());
+            url.searchParams.set("persona", newPersona);
+            tab.setEndpoint(url.toString());
+
+            // This only handles service-clauses where the previous persona was included
+            if (oldPersona) {
+                const query = tab.getQuery()
+                    .replace(`persona=${oldPersona}`, `persona=${newPersona}`)
+                tab.setQuery(query);
+            }
         }
     }
 </script>
