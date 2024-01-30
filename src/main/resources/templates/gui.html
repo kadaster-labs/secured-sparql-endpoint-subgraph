@@ -85,9 +85,10 @@
 
     function setPersona(persona) {
         for (const tabName in yasgui._tabs) {
-            let query = yasgui._tabs[tabName].getQuery()
-                .replace(/ ?#persona.*\n/g, '') // Remove old persona
-            yasgui._tabs[tabName].setQuery(`#persona_${persona}\n${query}`)
+            let url = new URL(yasgui._tabs[tabName].getEndpoint());
+            url.searchParams.set("persona", persona);
+            yasgui._tabs[tabName].setEndpoint(url.toString());
+            // TODO this doesn't handle service-clauses
         }
     }
 </script>
