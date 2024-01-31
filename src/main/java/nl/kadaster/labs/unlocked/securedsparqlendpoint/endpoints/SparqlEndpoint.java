@@ -27,18 +27,18 @@ public class SparqlEndpoint {
     @PostMapping(value = "/{dataset}/sparql",
             consumes = "application/x-www-form-urlencoded"
     )
-    public String queryInBody(@PathVariable("dataset") String datasetName, @RequestParam("query") String queryString) {
-        return this.query(datasetName, queryString);
+    public String queryInBody(@PathVariable("dataset") String datasetName, @RequestParam("query") String queryString, @RequestParam(required = false) String persona) {
+        return this.query(datasetName, queryString, persona);
     }
 
     @PostMapping(value = "/{dataset}/sparql",
             consumes = "application/sparql-query"
     )
-    public String queryPlain(@PathVariable("dataset") String datasetName, @RequestBody String queryString) {
-        return this.query(datasetName, queryString);
+    public String queryPlain(@PathVariable("dataset") String datasetName, @RequestBody String queryString, @RequestParam(required = false) String persona) {
+        return this.query(datasetName, queryString, persona);
     }
 
-    private String query(String datasetName, String queryString) {
+    private String query(String datasetName, String queryString, String persona) {
         log.info("Query submitted [{}]", queryString.replace("\n", " "));
 
         var dataset = this.datasets.get(datasetName)
