@@ -1,6 +1,7 @@
 package nl.kadaster.labs.unlocked.securedsparqlendpoint.endpoints;
 
 import lombok.extern.slf4j.Slf4j;
+import nl.kadaster.labs.unlocked.securedsparqlendpoint.logging.LogEvent;
 import nl.kadaster.labs.unlocked.securedsparqlendpoint.repositories.DatasetRepository;
 import nl.kadaster.labs.unlocked.securedsparqlendpoint.util.OutputStreamUtil;
 import org.apache.jena.graph.Node;
@@ -43,6 +44,15 @@ public class SparqlEndpoint {
 
         var dataset = this.datasets.get(datasetName)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dataset not found"));
+
+        LogEvent event = new LogEvent(dataset);
+        event.addDetail("https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/endpoint", datasetName);
+        event.addDetail("https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/sparqlquery", queryString);
+
+        if (persona != null) {
+            event.addDetail("https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/by_user", persona);
+        }
+
         var query = QueryFactory.create(queryString);
         if (query.isUnknownType()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown query type");
 

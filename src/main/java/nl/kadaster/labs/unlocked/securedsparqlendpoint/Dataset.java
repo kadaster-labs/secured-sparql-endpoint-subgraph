@@ -2,6 +2,8 @@ package nl.kadaster.labs.unlocked.securedsparqlendpoint;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.kadaster.labs.unlocked.securedsparqlendpoint.util.GlobUtil;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.sparql.core.DatasetGraph;
 import org.apache.jena.tdb.TDBFactory;
@@ -23,6 +25,7 @@ public class Dataset {
     public final String name;
     public final DatasetGraph accessOntology;
     public final DatasetGraph dataOntology;
+    public final Model logOntology = ModelFactory.createOntologyModel();
 
     public Dataset(Path path) throws IOException {
         this.dataOntology = load(path);

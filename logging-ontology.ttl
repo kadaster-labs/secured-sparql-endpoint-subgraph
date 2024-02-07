@@ -1,0 +1,192 @@
+# baseURI: https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/
+# imports: https://data.federatief.datastelsel.nl/lock-unlock/authentication/model/def/
+# imports: https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/
+
+@prefix : <https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/> .
+@prefix authentication: <https://data.federatief.datastelsel.nl/lock-unlock/authentication/model/def/> .
+@prefix authorisation: <https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:
+  rdf:type owl:Ontology ;
+  owl:imports authentication: ;
+  owl:imports authorisation: ;
+  owl:versionInfo "Created with TopBraid Composer" ;
+.
+:LogEvent
+  rdf:type owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty :by_user ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty :startDate ;
+    ] ;
+.
+:SparqlClearGraph
+  rdf:type owl:Class ;
+  rdfs:comment "clear graph" ;
+  rdfs:subClassOf :LogEvent ;
+.
+:SparqlConstruct
+  rdf:type owl:Class ;
+  rdfs:comment "logging sparql construct queries" ;
+  rdfs:subClassOf :LogEvent ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty :sparqlquery ;
+    ] ;
+.
+:SparqlDescribeEvent
+  rdf:type owl:Class ;
+  rdfs:comment "logging sparql describe events" ;
+  rdfs:subClassOf :LogEvent ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty :sparqlquery ;
+    ] ;
+.
+:SparqlSelectEvent
+  rdf:type owl:Class ;
+  rdfs:comment "logging sparql select events" ;
+  rdfs:subClassOf :LogEvent ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty :sparqlquery ;
+    ] ;
+.
+:SparqlUpdate
+  rdf:type owl:Class ;
+  rdfs:comment "logging sparql update events" ;
+  rdfs:subClassOf :LogEvent ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty :sparqlquery ;
+    ] ;
+.
+:amount_of_results
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  rdfs:comment "amount of results when the query is succesfully executed" ;
+  rdfs:domain :LogEvent ;
+  rdfs:range xsd:integer ;
+.
+:by_user
+  rdf:type owl:FunctionalProperty ;
+  rdf:type owl:ObjectProperty ;
+  rdfs:comment "the user that has produced the query" ;
+  rdfs:domain :LogEvent ;
+  rdfs:range authentication:User ;
+.
+:endpoint
+  rdf:type owl:FunctionalProperty ;
+  rdf:type owl:ObjectProperty ;
+  rdfs:comment "endpoint that has executed the query" ;
+  rdfs:domain :LogEvent ;
+  rdfs:range [
+      rdf:type owl:Class ;
+      owl:unionOf (
+          :SparqlConstruct
+          :SparqlDescribeEvent
+          :SparqlSelectEvent
+          :SparqlUpdate
+        ) ;
+    ] ;
+.
+:executedQuery
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  rdfs:comment "the actual sparql query that has been used in case the query has been rewritten by lock/unlock functionality" ;
+  rdfs:domain [
+      rdf:type owl:Class ;
+      owl:unionOf (
+          :SparqlConstruct
+          :SparqlDescribeEvent
+          :SparqlSelectEvent
+          :SparqlUpdate
+        ) ;
+    ] ;
+  rdfs:range xsd:string ;
+.
+:filtered_by
+  rdf:type owl:ObjectProperty ;
+  rdfs:comment "access rules that have had influence on the results of this query" ;
+  rdfs:domain :LogEvent ;
+  rdfs:range authorisation:AccessRule ;
+.
+:hasResults
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  rdfs:comment "logs if the executed query actually has produced results" ;
+  rdfs:domain :LogEvent ;
+  rdfs:range xsd:boolean ;
+.
+:isFiltered
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  rdfs:comment "true when the actually query is filtered by accessrules" ;
+  rdfs:domain [
+      rdf:type owl:Class ;
+      owl:unionOf (
+          :SparqlConstruct
+          :SparqlDescribeEvent
+          :SparqlSelectEvent
+          :SparqlUpdate
+        ) ;
+    ] ;
+  rdfs:range xsd:boolean ;
+.
+:processID
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  rdfs:comment "process id of the process that has executed the query" ;
+  rdfs:domain :LogEvent ;
+  rdfs:range xsd:string ;
+.
+:processingtime
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  rdfs:comment "the time it took to process the query in miliseconds" ;
+  rdfs:domain :LogEvent ;
+  rdfs:range xsd:long ;
+.
+:serverID
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  rdfs:comment "server id that has processed the query" ;
+  rdfs:domain :LogEvent ;
+  rdfs:range xsd:string ;
+.
+:sparqlquery
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  rdfs:comment "the actual sparql query" ;
+  rdfs:domain [
+      rdf:type owl:Class ;
+      owl:unionOf (
+          :SparqlConstruct
+          :SparqlDescribeEvent
+          :SparqlSelectEvent
+          :SparqlUpdate
+        ) ;
+    ] ;
+  rdfs:range xsd:string ;
+.
+:startDate
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  rdfs:comment "timestamp when query is received" ;
+  rdfs:domain :LogEvent ;
+  rdfs:range xsd:dateTime ;
+.
