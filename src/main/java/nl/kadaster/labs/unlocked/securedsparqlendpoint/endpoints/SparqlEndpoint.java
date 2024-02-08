@@ -54,6 +54,7 @@ public class SparqlEndpoint {
         }
 
         var query = QueryFactory.create(queryString);
+        event.addDetail(query.queryType());
         if (query.isUnknownType()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown query type");
 
         var subgraph = ModelFactory.createDefaultModel();

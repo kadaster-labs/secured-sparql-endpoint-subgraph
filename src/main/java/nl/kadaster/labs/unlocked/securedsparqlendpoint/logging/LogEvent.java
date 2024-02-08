@@ -2,6 +2,7 @@ package nl.kadaster.labs.unlocked.securedsparqlendpoint.logging;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.kadaster.labs.unlocked.securedsparqlendpoint.Dataset;
+import org.apache.jena.query.QueryType;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 
@@ -18,6 +19,11 @@ import java.util.TimeZone;
 @Slf4j
 public class LogEvent {
     private static final Map<String, String> staticData;
+    private static final Map<QueryType, String> queryTypes = Map.of(
+            QueryType.CONSTRUCT, "https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/SparqlConstruct",
+            QueryType.DESCRIBE, "https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/SparqlDescribeEvent",
+            QueryType.SELECT, "https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/SparqlSelectEvent"
+    );
 
     static {
         Map<String, String> data = new HashMap<>();
@@ -45,6 +51,13 @@ public class LogEvent {
 
     public void addDetail(String predicate, String object) {
         this.graph.add(this.node, this.graph.createProperty(predicate), object);
+    }
+
+    public void addDetail(QueryType type) {
+        String uri = LogEvent.queryTypes.get(type);
+        if (uri != null) {
+            this.addDetail("http://www.w3.org/1999/02/22-rdf-syntax-ns#type", uri);
+        }
     }
 
     public void addDetail(String predicate, Date object) {
