@@ -85,6 +85,8 @@ public class SparqlEndpoint {
         } catch (QueryParseException exception) {
             log.info("Query cannot be parsed");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid query");
+        } finally {
+            event.conclude();
         }
     }
 

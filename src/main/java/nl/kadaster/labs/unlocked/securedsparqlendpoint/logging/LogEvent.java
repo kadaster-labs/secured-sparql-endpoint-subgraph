@@ -40,13 +40,14 @@ public class LogEvent {
     }
 
     private final Model graph;
-    public final Resource node;
+    private final Resource node;
+    private final Date start = new Date();
 
     public LogEvent(Dataset dataset) {
         this.graph = dataset.logOntology;
         this.node = this.graph.createResource();
         LogEvent.staticData.forEach(this::addDetail);
-        this.addDetail("https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/startDate", new Date());
+        this.addDetail("https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/startDate", this.start);
     }
 
     public void addDetail(String predicate, String object) {
@@ -64,5 +65,11 @@ public class LogEvent {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         this.addDetail(predicate, df.format(object));
+    }
+
+    public void conclude() {
+        var end = new Date();
+        var diff = end.getTime() - this.start.getTime();
+        this.addDetail("https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/processingtime", String.valueOf(diff));
     }
 }
