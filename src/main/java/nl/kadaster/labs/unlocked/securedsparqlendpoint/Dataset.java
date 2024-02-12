@@ -25,7 +25,7 @@ public class Dataset {
     public final String name;
     public final DatasetGraph accessOntology;
     public final DatasetGraph dataOntology;
-    public final Model logOntology = ModelFactory.createOntologyModel();
+    public final Model logOntology = ModelFactory.createDefaultModel();
 
     public Dataset(Path path) throws IOException {
         this.dataOntology = load(path);
