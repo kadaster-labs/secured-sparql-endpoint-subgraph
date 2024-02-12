@@ -22,6 +22,8 @@ import org.springframework.web.server.ResponseStatusException;
 @Slf4j
 @RestController
 public class SparqlEndpoint {
+    private static final String DEFAULT_USER = "h_de_vries";
+
     @Autowired
     private DatasetRepository datasets;
 
@@ -49,7 +51,9 @@ public class SparqlEndpoint {
         event.addDetail("https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/endpoint", datasetName);
         event.addDetail("https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/sparqlquery", queryString);
 
-        if (persona != null) {
+        if (persona == null) {
+            persona = DEFAULT_USER;
+        } else {
             event.addDetail("https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/by_user", persona);
         }
 
