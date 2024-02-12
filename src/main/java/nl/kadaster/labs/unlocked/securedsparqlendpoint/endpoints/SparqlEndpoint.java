@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import nl.kadaster.labs.unlocked.securedsparqlendpoint.logging.LogEvent;
 import nl.kadaster.labs.unlocked.securedsparqlendpoint.repositories.DatasetRepository;
 import nl.kadaster.labs.unlocked.securedsparqlendpoint.util.OutputStreamUtil;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
@@ -22,6 +20,16 @@ import org.springframework.web.server.ResponseStatusException;
 @Slf4j
 @RestController
 public class SparqlEndpoint {
+    private static final String ACCESS_RULES_QUERY = """
+            PREFIX auth: <https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/>
+                        
+            SELECT * WHERE {
+              ?rule a auth:AccessRule .
+              ?rule auth:condition ?condition.
+              ?rule auth:subject ?subject.
+              <https://labs.kadaster.nl/unlocked/data/$dataset.auth#$persona> auth:extends*/auth:has_rule ?rule
+            }
+            """;
     private static final String DEFAULT_USER = "h_de_vries";
 
     @Autowired
@@ -42,9 +50,7 @@ public class SparqlEndpoint {
     }
 
     private String query(String datasetName, String queryString, String persona) {
-        log.info("Query submitted [{}]", queryString.replace("\n", " "));
-
-        var dataset = this.datasets.get(datasetName)
+        var dataset = this.datasets.get(this.extractDatasetName(datasetName))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dataset not found"));
 
         LogEvent event = new LogEvent(dataset);
@@ -57,35 +63,50 @@ public class SparqlEndpoint {
             event.addDetail("https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/by_user", persona);
         }
 
-        var query = QueryFactory.create(queryString);
-        event.addDetail(query.queryType());
-        if (query.isUnknownType()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown query type");
+        // TODO log amount of results
+        // TODO log has results
+        // TODO log is filtered
 
-        var subgraph = ModelFactory.createDefaultModel();
+        try {
+            var query = QueryFactory.create(queryString);
+            event.addDetail(query.queryType());
+            if (query.isUnknownType()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown query type");
 
-        dataset.accessOntology.find(
-                Node.ANY,
-                Node.ANY,
-                NodeFactory.createURI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                NodeFactory.createURI("https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/AccessRule")
-        ).forEachRemaining(quad -> {
-            var rule = quad.getSubject();
-            var subject = dataset.accessOntology.find(Node.ANY, rule, NodeFactory.createURI("https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/subject"), Node.ANY).next().getObject().getLiteralValue().toString();
-            var condition = dataset.accessOntology.find(Node.ANY, rule, NodeFactory.createURI("https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/condition"), Node.ANY).next().getObject().getLiteralValue().toString();
-            var accessQuery = QueryFactory.create("CONSTRUCT {$subject} WHERE {$subject $condition}"
-                    .replace("$subject", subject)
-                    .replace("$condition", condition));
-            try (QueryExecution execution = QueryExecutionFactory.create(accessQuery, dataset.dataOntology)) {
-                var model = execution.execConstruct();
-                log.debug("Access rule {} yields {} triples", rule, model.size());
-                subgraph.add(model);
+            var modelName = this.extractModelName(datasetName);
+            if (modelName == null) {
+                var accessRulesQuery = QueryFactory.create(ACCESS_RULES_QUERY
+                        .replace("$persona", persona)
+                        .replace("$dataset", dataset.name)
+                );
+                try (QueryExecution accessRules = QueryExecutionFactory.create(accessRulesQuery, dataset.accessOntology)) {
+                    var subset = ModelFactory.createDefaultModel();
+                    accessRules.execSelect().forEachRemaining(result -> {
+                        var accessQuery = QueryFactory.create("CONSTRUCT {$subject} WHERE {$subject $condition}"
+                                .replace("$subject", result.getLiteral("subject").getString())
+                                .replace("$condition", result.getLiteral("condition").getString())
+                        );
+                        event.addDetail("https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/filtered_by", result.getResource("rule").getURI());
+                        try (QueryExecution execution = QueryExecutionFactory.create(accessQuery, dataset.dataOntology)) {
+                            var model = execution.execConstruct();
+                            log.info("Access rule {} yields {} triples", result.getResource("rule").getURI(), model.size());
+                            subset.add(model);
+                        }
+                    });
+                    try (QueryExecution execution = QueryExecutionFactory.create(query, subset)) {
+                        return this.buildResponse(execution);
+                    }
+                }
+            } else if (modelName.equals("auth")) {
+                try (QueryExecution execution = QueryExecutionFactory.create(query, dataset.accessOntology)) {
+                    return this.buildResponse(execution);
+                }
+            } else if (modelName.equals("log")) {
+                try (QueryExecution execution = QueryExecutionFactory.create(query, dataset.logOntology)) {
+                    return this.buildResponse(execution);
+                }
+            } else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Model does not exist");
             }
-        });
-
-        log.info("Accessible graph has {} triples", subgraph.size());
-
-        try (QueryExecution execution = QueryExecutionFactory.create(query, subgraph)) {
-            return this.buildResponse(execution);
         } catch (QueryParseException exception) {
             log.info("Query cannot be parsed");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid query");
@@ -121,5 +142,15 @@ public class SparqlEndpoint {
         }
 
         return OutputStreamUtil.capture(writer::output);
+    }
+
+    private String extractDatasetName(String name) {
+        var idx = name.indexOf('.');
+        return idx == -1 ? name : name.substring(0, idx);
+    }
+
+    private String extractModelName(String name) {
+        var idx = name.indexOf('.');
+        return idx == -1 ? null : name.substring(idx + 1);
     }
 }
