@@ -28,11 +28,12 @@ public class Dataset {
     public final Model logOntology = ModelFactory.createDefaultModel();
 
     public Dataset(Path path) throws IOException {
-        this.dataOntology = load(path);
-
         var filename = path.getFileName().toString();
         filename = filename.substring(0, filename.lastIndexOf('.'));
         this.name = filename;
+
+        log.info("Loading ontology [{}]", this.name);
+        this.dataOntology = load(path);
 
         var authPath = GlobUtil.findFirst(path.getParent(), this.name + AUTHORISATION_ONTOLOGY_INFIX + ".*");
         if (authPath.isPresent()) {
@@ -41,5 +42,6 @@ public class Dataset {
             log.warn("Ontology [{}] has no authorisation policy, using open authorisation policy", this.name);
             this.accessOntology = OPEN_AUTHORISATION_POLICY;
         }
+        log.info("Loaded ontology [{}]", this.name);
     }
 }
