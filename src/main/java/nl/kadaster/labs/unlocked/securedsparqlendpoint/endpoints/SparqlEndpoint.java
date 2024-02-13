@@ -23,7 +23,7 @@ public class SparqlEndpoint {
     private static final String ACCESS_RULES_QUERY = """
             PREFIX auth: <https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/>
                         
-            SELECT * WHERE {
+            SELECT DISTINCT ?rule ?subject ?condition WHERE {
               ?rule a auth:AccessRule .
               ?rule auth:condition ?condition.
               ?rule auth:subject ?subject.
