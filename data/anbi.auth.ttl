@@ -1,0 +1,52 @@
+@prefix policy: <https://labs.kadaster.nl/unlocked/data/anbi.auth#>.
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix sse:    <https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/>.
+
+policy:h_de_vries
+    a            sse:SecurityGroup ;
+    rdfs:label   "Henk de Vries" ;
+    sse:has_rule policy:organisatie_vorm .
+
+policy:j_jansen
+    a           sse:SecurityGroup ;
+    rdfs:label  "Jessica Jansen" ;
+    sse:extends policy:h_de_vries .
+
+policy:j_peerenboom
+    a            sse:SecurityGroup ;
+    rdfs:label   "Jeroen Peerenboom" ;
+    sse:extends  policy:j_jansen ;
+    sse:has_rule policy:organisatie_nummers .
+
+policy:m_groen
+    a            sse:SecurityGroup ;
+    rdfs:label   "Marjolein Groen" ;
+    sse:extends  policy:j_jansen ;
+    sse:has_rule policy:organisatie_nummers .
+
+policy:f_van_as
+    a            sse:SecurityGroup ;
+    rdfs:label   "Ferdinand van As" ;
+    sse:extends  policy:j_peerenboom, policy:m_groen ;
+    sse:has_rule policy:nhr_linkset .
+
+policy:organisatie_vorm
+    a           sse:AccessRule ;
+    sse:subject """
+        ?instelling a <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/Instelling>;
+                    <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/vorm> ?rechtsvorm.
+    """ .
+
+policy:organisatie_nummers
+    a             sse:AccessRule ;
+    sse:subject   """
+        ?instelling <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/dossierNummer> ?dossierNr;
+                    <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/fiscaalNummer> ?fiscaalNr;
+                    <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/rsin> ?rsinNr .
+    """ ;
+    sse:condition "?instelling a <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/Instelling>" .
+
+policy:nhr_linkset
+    a             sse:AccessRule ;
+    sse:subject   "?instelling <http://www.w3.org/2002/07/owl#sameAs> ?nhrEntry." ;
+    sse:condition "?instelling a <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/Instelling>" .
