@@ -81,7 +81,7 @@ public class SparqlEndpoint {
                 try (QueryExecution accessRules = QueryExecutionFactory.create(accessRulesQuery, dataset.accessOntology)) {
                     var subset = ModelFactory.createDefaultModel();
                     accessRules.execSelect().forEachRemaining(result -> {
-                        var accessQuery = QueryFactory.create("CONSTRUCT {$subject} WHERE {$subject $condition}"
+                        var accessQuery = QueryFactory.create("CONSTRUCT {$subject} WHERE {GRAPH ?g {$subject $condition}}"
                                 .replace("$subject", result.getLiteral("subject").getString())
                                 .replace("$condition", result.getLiteral("condition").getString())
                         );
