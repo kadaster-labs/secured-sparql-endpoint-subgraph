@@ -4,7 +4,7 @@ Development of a secured SPARQL Endpoint with Authorization filter and logging e
 
 Other relevant repositories of the [Lock-Unlock Project](https://labs.kadaster.nl/cases/lockunlock) are:
 
-- [Lock-Unlock Onthologies](https://github.com/kadaster-labs/lock-unlock-onthologies)
+- [Lock-Unlock Docs](https://github.com/kadaster-labs/lock-unlock-docs) including onthologies
   - Authorization Onthology (in research)
   - Logging Onthology (in research)
 - [Lock-Unlock Testdata](https://github.com/kadaster-labs/lock-unlock-testdata)
