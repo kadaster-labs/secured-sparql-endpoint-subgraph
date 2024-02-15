@@ -11,6 +11,7 @@ import java.nio.file.Path;
 public class DatasetRepository extends Repository<Dataset> {
     public DatasetRepository() throws IOException {
         for (Path path : GlobUtil.findAll(Path.of("./data/"), "*")) {
+            if (path.toString().contains(Dataset.AUTHORISATION_ONTOLOGY_INFIX)) continue;
             var dataset = new Dataset(path);
             this.entries.put(dataset.name, dataset);
         }
