@@ -16,13 +16,13 @@ policy:j_peerenboom
     a            sse:SecurityGroup ;
     rdfs:label   "Jeroen Peerenboom" ;
     sse:extends  policy:j_jansen ;
-    sse:has_rule policy:organisatie_nummers .
+    sse:has_rule policy:organisaties_in_almere .
 
 policy:m_groen
     a            sse:SecurityGroup ;
     rdfs:label   "Marjolein Groen" ;
     sse:extends  policy:j_jansen ;
-    sse:has_rule policy:organisatie_nummers .
+    sse:has_rule policy:organisaties_in_zeewolde .
 
 policy:f_van_as
     a            sse:SecurityGroup ;
@@ -37,16 +37,17 @@ policy:organisatie_vorm
                     <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/vorm> ?rechtsvorm.
     """ .
 
-policy:organisatie_nummers
-    a             sse:AccessRule ;
-    sse:subject   """
-        ?instelling <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/dossierNummer> ?dossierNr;
-                    <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/fiscaalNummer> ?fiscaalNr;
-                    <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/rsin> ?rsinNr .
-    """ ;
-    sse:condition "?instelling a <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/Instelling>" .
+policy:organisaties_in_almere
+    a sse:AccessRule;
+    sse:subject "?instelling ?predicate ?value.";
+    sse:condition "?instelling a <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/Instelling>; <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/vestigingsPlaats> <https://brk.basisregistraties.overheid.nl/brk2/id/kadastraleGemeente/25>.".
 
-policy:nhr_linkset
-    a             sse:AccessRule ;
-    sse:subject   "?instelling <http://www.w3.org/2002/07/owl#sameAs> ?nhrEntry." ;
-    sse:condition "?instelling a <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/Instelling>" .
+policy:organisaties_in_zeewolde
+    a sse:AccessRule;
+    sse:subject "?instelling ?predicate ?value.";
+    sse:condition "?instelling a <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/Instelling>; <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/vestigingsPlaats> <https://brk.basisregistraties.overheid.nl/brk2/id/kadastraleGemeente/1156>.".
+
+policy:alle_organisatiegegevens
+    a sse:AccessRules;
+    sse:subject "?instelling ?predicate ?value.";
+    sse:condition "".

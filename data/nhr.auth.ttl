@@ -36,7 +36,8 @@ policy:openbare_bedrijfsgegevens
         ?inschrijving a <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/Inschrijving>;
                       <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/bedrijfsnaam> ?bedrijfsnaam;
                       <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/kvkNummer> ?kvkNummer;
-                      <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/rechtsvorm> ?rechtsvorm.
+                      <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/rechtsvorm> ?rechtsvorm;
+                      <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/zetel> ?zetel.
     """ ;
     sse:condition "" .
 
@@ -52,5 +53,8 @@ policy:afgeschermde_bedrijfsgegevens
 
 policy:ubo_gegevens
     a             sse:AccessRule ;
-    sse:subject   "?inschrijving <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/heeftUBO> ?ubo." ;
+    sse:subject   """
+        ?inschrijving <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/heeftUBO> ?ubo1;
+                      <https://data.federatief.datastelsel.nl/lock-unlock/informatiekundigekern/def/heeftUBO> ?ubo2.
+    """;
     sse:condition "?inschrijving a <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/Inschrijving>." .
