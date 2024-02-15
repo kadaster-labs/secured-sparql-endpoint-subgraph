@@ -35,6 +35,11 @@ public class SparqlEndpoint {
     @Autowired
     private DatasetRepository datasets;
 
+    @GetMapping(value = "/{dataset}/sparql")
+    public String queryGet(@PathVariable("dataset") String datasetName, @RequestParam("query") String queryString, @RequestParam(required = false) String persona) {
+        return this.query(datasetName, queryString, persona);
+    }
+
     @PostMapping(value = "/{dataset}/sparql",
             consumes = "application/x-www-form-urlencoded"
     )
