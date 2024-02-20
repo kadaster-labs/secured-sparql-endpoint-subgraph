@@ -31,11 +31,12 @@ policy:f_van_as
     sse:has_rule policy:nhr_linkset .
 
 policy:organisatie_vorm
-    a           sse:AccessRule ;
-    sse:subject """
+    a             sse:AccessRule ;
+    sse:subject   """
         ?instelling a <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/Instelling>;
                     <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/vorm> ?rechtsvorm.
-    """ .
+    """ ;
+    sse:condition "" .
 
 policy:organisaties_in_almere
     a sse:AccessRule;
@@ -48,6 +49,6 @@ policy:organisaties_in_zeewolde
     sse:condition "?instelling a <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/Instelling>; <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/vestigingsPlaats> <https://brk.basisregistraties.overheid.nl/brk2/id/kadastraleGemeente/1156>.".
 
 policy:alle_organisatiegegevens
-    a sse:AccessRules;
-    sse:subject "?instelling ?predicate ?value.";
-    sse:condition "".
+    a             sse:AccessRule ;
+    sse:subject   "?instelling ?predicate ?value." ;
+    sse:condition "" .
