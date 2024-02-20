@@ -25,8 +25,6 @@ public class SparqlEndpoint {
                         
             SELECT DISTINCT ?rule ?subject ?condition WHERE {
               ?rule a auth:AccessRule .
-              ?rule auth:condition ?condition.
-              ?rule auth:subject ?subject.
               <https://labs.kadaster.nl/unlocked/data/$dataset.auth#$persona> auth:extends*/auth:has_rule ?rule
             }
             """;
@@ -86,16 +84,11 @@ public class SparqlEndpoint {
                 try (QueryExecution accessRules = QueryExecutionFactory.create(accessRulesQuery, dataset.accessOntology)) {
                     var subset = ModelFactory.createDefaultModel();
                     accessRules.execSelect().forEachRemaining(result -> {
-                        var accessQuery = QueryFactory.create("CONSTRUCT {$subject} WHERE {GRAPH ?g {$subject $condition}}"
-                                .replace("$subject", result.getLiteral("subject").getString())
-                                .replace("$condition", result.getLiteral("condition").getString())
-                        );
-                        event.addDetail("https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/filtered_by", result.getResource("rule").getURI());
-                        try (QueryExecution execution = QueryExecutionFactory.create(accessQuery, dataset.dataOntology)) {
-                            var model = execution.execConstruct();
-                            log.info("Access rule {} yields {} triples", result.getResource("rule").getURI(), model.size());
-                            subset.add(model);
-                        }
+                        var rule = result.getResource("rule").getURI();
+                        var model = dataset.getSubset(rule);
+                        subset.add(model);
+                        event.addDetail("https://data.federatief.datastelsel.nl/lock-unlock/logging/model/def/filtered_by", rule);
+                        log.info("Access rule {} yields {} triples", rule, model.size());
                     });
                     try (QueryExecution execution = QueryExecutionFactory.create(query, subset)) {
                         return this.buildResponse(execution);
