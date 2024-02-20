@@ -40,7 +40,6 @@ public class Dataset {
     public final String name;
     private final Map<String, Model> accessRules = new HashMap<>();
     public final DatasetGraph accessOntology;
-    public final DatasetGraph dataOntology;
     public final Model logOntology = ModelFactory.createDefaultModel();
 
     public Dataset(Path path) throws IOException {
@@ -49,7 +48,7 @@ public class Dataset {
         this.name = filename;
 
         log.info("Loading ontology [{}]", this.name);
-        this.dataOntology = load(path);
+        var dataOntology = load(path);
 
         var authPath = GlobUtil.findFirst(path.getParent(), this.name + AUTHORISATION_ONTOLOGY_INFIX + ".*");
         if (authPath.isPresent()) {
@@ -58,7 +57,7 @@ public class Dataset {
             log.warn("Ontology [{}] has no authorisation policy, using open authorisation policy", this.name);
             this.accessOntology = OPEN_AUTHORISATION_POLICY;
         }
-        log.info("Loaded ontology [{}]", this.name);
+        log.info("Loaded ontology [{}] containing {} triples", this.name, dataOntology.getUnionGraph().size());
 
         try (QueryExecution rules = QueryExecutionFactory.create(RULES_QUERY, this.accessOntology)) {
             rules.execSelect().forEachRemaining(result -> {
@@ -69,7 +68,7 @@ public class Dataset {
                         .replace("$condition", result.getLiteral("condition").getString())
                 );
 
-                try (QueryExecution execution = QueryExecutionFactory.create(constructQuery, this.dataOntology)) {
+                try (QueryExecution execution = QueryExecutionFactory.create(constructQuery, dataOntology)) {
                     var model = execution.execConstruct();
                     log.info("Access rule {} yields {} triples", rule, model.size());
                     accessRules.put(rule, model);
