@@ -17,8 +17,6 @@ public class DatasetRepository extends Repository<Dataset> {
         var file = args.length == 0 ? "*" : args[0];
         var paths = GlobUtil.findAll(Path.of("./data/"), file);
 
-        log.info("Loading {} {}", paths.size(), paths.size() == 1 ? "ontology" : "ontologies");
-
         for (Path path : paths) {
             if (path.toString().contains(Dataset.AUTHORISATION_ONTOLOGY_INFIX)) continue;
             var dataset = new Dataset(path);
