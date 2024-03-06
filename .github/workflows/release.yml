@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
+      - name: setup-pack
+        uses: buildpacks/github-actions/setup-pack@v5.5.1
+
+      - name: setup-tools
+        uses: buildpacks/github-actions/setup-tools@v5.5.1
+
+      - name: package
+        run: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+
+          PACKAGE=${GITHUB_REPOSITORY}
+          VERSION=${{ github.event.release.tag_name }}
+          IMAGE="ghcr.io/${PACKAGE}:${VERSION}"
+
+          pack build --publish \
+            --builder paketobuildpacks/builder-jammy-base:latest \
+            --env "BP_OCI_DESCRIPTION=Secured SPARQL Endpoint" \
+            --env "BP_OCI_SOURCE=https://github.com/$PACKAGE" \
+            ${IMAGE}
+
+          DIGEST="$(crane digest ${IMAGE})"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "address=${PACKAGE}@${DIGEST}" >> "$GITHUB_OUTPUT"
+        shell: bash
