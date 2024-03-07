@@ -20,7 +20,6 @@ import java.util.Map;
 @Slf4j
 public class Dataset {
     public static final String AUTHORISATION_ONTOLOGY_INFIX = ".auth";
-    public static final Model EMPTY_MODEL = ModelFactory.createDefaultModel();
     public static final DatasetGraph OPEN_AUTHORISATION_POLICY = Dataset.load(Path.of("data/open.auth.ttl"));
     public static final Query RULES_QUERY = QueryFactory.create("""
             PREFIX auth: <https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/>
@@ -79,6 +78,8 @@ public class Dataset {
     }
 
     public Model getSubset(String ruleURI) {
-        return this.accessRules.getOrDefault(ruleURI, EMPTY_MODEL);
+        return Optional
+                .ofNullable(this.accessRules.get(ruleURI))
+                .orElseGet(ModelFactory::createDefaultModel);
     }
 }
