@@ -3,7 +3,7 @@ package nl.kadaster.labs.unlocked.securedsparqlendpoint.endpoints;
 import lombok.extern.slf4j.Slf4j;
 import nl.kadaster.labs.unlocked.securedsparqlendpoint.logging.LogEvent;
 import nl.kadaster.labs.unlocked.securedsparqlendpoint.repositories.DatasetRepository;
-import nl.kadaster.labs.unlocked.securedsparqlendpoint.util.OutputStreamUtil;
+import nl.kadaster.labs.unlocked.securedsparqlendpoint.util.IOUtil;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
@@ -81,7 +81,7 @@ public class SparqlEndpoint {
                         .replace("$persona", persona)
                         .replace("$dataset", dataset.name)
                 );
-                try (QueryExecution accessRules = QueryExecutionFactory.create(accessRulesQuery, dataset.accessOntology)) {
+                try (QueryExecution accessRules = QueryExecutionFactory.create(accessRulesQuery, dataset.metaOntology)) {
                     var subset = ModelFactory.createDefaultModel();
                     accessRules.execSelect().forEachRemaining(result -> {
                         var rule = result.getResource("rule").getURI();
@@ -95,7 +95,7 @@ public class SparqlEndpoint {
                     }
                 }
             } else if (modelName.equals("auth")) {
-                try (QueryExecution execution = QueryExecutionFactory.create(query, dataset.accessOntology)) {
+                try (QueryExecution execution = QueryExecutionFactory.create(query, dataset.metaOntology)) {
                     return this.buildResponse(execution);
                 }
             } else if (modelName.equals("log")) {
@@ -123,7 +123,7 @@ public class SparqlEndpoint {
                     <boolean>$result</boolean>
                     </sparql>""".replace("$result", execution.execAsk() ? "true" : "false");
         } else if (query.isSelectType()) {
-            return OutputStreamUtil.capture(output -> ResultSetFormatter.outputAsJSON(output, execution.execSelect()));
+            return IOUtil.capture(output -> ResultSetFormatter.outputAsJSON(output, execution.execSelect()));
         }
 
         var writer = RDFWriter.create();
@@ -139,7 +139,7 @@ public class SparqlEndpoint {
             throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Query method isn't implemented yet");
         }
 
-        return OutputStreamUtil.capture(writer::output);
+        return IOUtil.capture(writer::output);
     }
 
     private String extractDatasetName(String name) {

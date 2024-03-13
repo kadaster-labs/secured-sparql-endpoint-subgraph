@@ -1,0 +1,67 @@
+@prefix policy: <https://labs.kadaster.nl/unlocked/data/brp.auth#>.
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix sse:    <https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/>.
+
+[] sse:has_data_file "https://github.com/kadaster-labs/lock-unlock-testdata/raw/99edc7b4121a14b1c0c17b8f9e97d8f80644d7b8/testdata-brp/data.zip".
+
+policy:h_de_vries
+    a            sse:SecurityGroup ;
+    rdfs:label   "Henk de Vries" ;
+    sse:has_rule policy:statistische_gegevens, policy:gemeenteaanduidingen .
+
+policy:j_jansen
+    a            sse:SecurityGroup ;
+    rdfs:label   "Jessica Jansen" ;
+    sse:extends  policy:h_de_vries ;
+    sse:has_rule policy:eigen_gegevens_j_jansen .
+
+policy:j_peerenboom
+    a            sse:SecurityGroup ;
+    rdfs:label   "Jeroen Peerenboom" ;
+    sse:extends  policy:h_de_vries ;
+    sse:has_rule policy:inwoners_almere .
+
+policy:m_groen
+    a            sse:SecurityGroup ;
+    rdfs:label   "Marjolein Groen" ;
+    sse:extends  policy:h_de_vries ;
+    sse:has_rule policy:inwoners_zeewolde .
+
+policy:f_van_as
+    a            sse:SecurityGroup ;
+    rdfs:label   "Ferdinand van As" ;
+    sse:extends  policy:h_de_vries ;
+    sse:has_rule policy:alle_gegevens .
+
+
+policy:statistische_gegevens
+    a sse:AccessRule;
+    sse:subject "?persoon <https://data.federatief.datastelsel.nl/lock-unlock/brp/def/heeftVerblijfsplaats> ?plaats";
+    sse:condition "".
+
+policy:gemeenteaanduidingen
+    a sse:AccessRule;
+    sse:subject "?node <http://www.w3.org/2000/01/rdf-schema#label> ?name" ;
+    sse:condition "FILTER (strstarts(str(?node), 'https://brk.basisregistraties.overheid.nl/brk2/id/kadastraleGemeente/'))".
+
+policy:eigen_gegevens_j_jansen
+    a             sse:AccessRule ;
+    sse:subject   "?persoon ?predicate ?value." ;
+    sse:condition "?persoon <https://data.federatief.datastelsel.nl/lock-unlock/brp/def/bsn> 16469959;" .
+
+policy:inwoners_almere
+    a           sse:AccessRule ;
+    sse:subject "?persoon ?predicate ?value." ;
+    sse:condition
+                "?persoon <https://data.federatief.datastelsel.nl/lock-unlock/brp/def/heeftVerblijfsplaats> <https://brk.basisregistraties.overheid.nl/brk2/id/kadastraleGemeente/25>." .
+
+policy:inwoners_zeewolde
+    a           sse:AccessRule ;
+    sse:subject "?persoon ?predicate ?value." ;
+    sse:condition
+                "?persoon <https://data.federatief.datastelsel.nl/lock-unlock/brp/def/heeftVerblijfsplaats> <https://brk.basisregistraties.overheid.nl/brk2/id/kadastraleGemeente/1156>." .
+
+policy:alle_gegevens
+    a             sse:AccessRule ;
+    sse:subject   "?s ?p ?o" ;
+    sse:condition "" .

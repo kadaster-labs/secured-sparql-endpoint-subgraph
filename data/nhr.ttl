@@ -1,9 +1,62 @@
-<https://data.federatief.datastelsel.nl/lock-unlock/nhr/id/inschrijving/fff9e4b1-0351-41ea-a0e9-89c35dbfa956> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/Inschrijving> .
-<https://data.federatief.datastelsel.nl/lock-unlock/nhr/id/inschrijving/fff9e4b1-0351-41ea-a0e9-89c35dbfa956> <http://www.w3.org/2000/01/rdf-schema#label> "Lakerveld VOF" .
-<https://data.federatief.datastelsel.nl/lock-unlock/nhr/id/inschrijving/fff9e4b1-0351-41ea-a0e9-89c35dbfa956> <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/bedrijfsnaam> "Lakerveld VOF" .
-<https://data.federatief.datastelsel.nl/lock-unlock/nhr/id/inschrijving/fff9e4b1-0351-41ea-a0e9-89c35dbfa956> <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/heeftUBO> <https://data.federatief.datastelsel.nl/lock-unlock/brp/id/geregistreerd-persoon/4a8397b5-9035-49f7-a7ef-62a91dfa7df5> .
-<https://data.federatief.datastelsel.nl/lock-unlock/nhr/id/inschrijving/fff9e4b1-0351-41ea-a0e9-89c35dbfa956> <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/kvkNummer> "110054928"^^<http://www.w3.org/2001/XMLSchema#integer> .
-<https://data.federatief.datastelsel.nl/lock-unlock/nhr/id/inschrijving/fff9e4b1-0351-41ea-a0e9-89c35dbfa956> <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/leiNummer> "99046995"^^<http://www.w3.org/2001/XMLSchema#integer> .
-<https://data.federatief.datastelsel.nl/lock-unlock/nhr/id/inschrijving/fff9e4b1-0351-41ea-a0e9-89c35dbfa956> <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/rechtsvorm> "VOF" .
-<https://data.federatief.datastelsel.nl/lock-unlock/nhr/id/inschrijving/fff9e4b1-0351-41ea-a0e9-89c35dbfa956> <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/rsinNummer> "97821"^^<http://www.w3.org/2001/XMLSchema#integer> .
-<https://data.federatief.datastelsel.nl/lock-unlock/nhr/id/inschrijving/fff9e4b1-0351-41ea-a0e9-89c35dbfa956> <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/stichtingsjaar> "1980"^^<http://www.w3.org/2001/XMLSchema#integer> .
+@prefix policy: <https://labs.kadaster.nl/unlocked/data/nhr.auth#>.
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix sse:    <https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/>.
+
+[] sse:has_data_file "https://github.com/kadaster-labs/lock-unlock-testdata/raw/99edc7b4121a14b1c0c17b8f9e97d8f80644d7b8/testdata-nhr/data.zip".
+
+policy:h_de_vries
+    a            sse:SecurityGroup ;
+    rdfs:label   "Henk de Vries" ;
+    sse:has_rule policy:openbare_bedrijfsgegevens .
+
+policy:j_jansen
+    a            sse:SecurityGroup ;
+    rdfs:label   "Jessica Jansen" ;
+    sse:extends  policy:h_de_vries ;
+    sse:has_rule policy:afgeschermde_bedrijfsgegevens .
+
+policy:j_peerenboom
+    a           sse:SecurityGroup ;
+    rdfs:label  "Jeroen Peerenboom" ;
+    sse:extends policy:j_jansen .
+
+policy:m_groen
+    a           sse:SecurityGroup ;
+    rdfs:label  "Marjolein Groen" ;
+    sse:extends policy:j_jansen .
+
+policy:f_van_as
+    a            sse:SecurityGroup ;
+    rdfs:label   "Ferdinand van As" ;
+    sse:extends  policy:j_jansen ;
+    sse:has_rule policy:ubo_gegevens .
+
+
+policy:openbare_bedrijfsgegevens
+    a             sse:AccessRule ;
+    sse:subject   """
+        ?inschrijving a <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/Inschrijving>;
+                      <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/bedrijfsnaam> ?bedrijfsnaam;
+                      <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/kvkNummer> ?kvkNummer;
+                      <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/rechtsvorm> ?rechtsvorm;
+                      <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/zetel> ?zetel.
+    """ ;
+    sse:condition "" .
+
+policy:afgeschermde_bedrijfsgegevens
+    a             sse:AccessRule ;
+    sse:subject   """
+    ?inschrijfing a <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/Inschrijving>;
+                  <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/leiNummer> ?leiNr;
+                  <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/rsinNummer> ?rsinNr;
+                  <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/stichtingsjaar> ?jaar.
+    """ ;
+    sse:condition "" .
+
+policy:ubo_gegevens
+    a             sse:AccessRule ;
+    sse:subject   """
+        ?inschrijving <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/heeftUBO> ?ubo1;
+                      <https://data.federatief.datastelsel.nl/lock-unlock/informatiekundigekern/def/heeftUBO> ?ubo2.
+    """;
+    sse:condition "?inschrijving a <https://data.federatief.datastelsel.nl/lock-unlock/nhr/def/Inschrijving>." .

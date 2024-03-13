@@ -1,6 +1,56 @@
-<https://data.federatief.datastelsel.nl/lock-unlock/anbi/id/instelling/00024a86-b284-4f94-9aa9-2e9a9ec25e5d> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/Instelling> .
-<https://data.federatief.datastelsel.nl/lock-unlock/anbi/id/instelling/00024a86-b284-4f94-9aa9-2e9a9ec25e5d> <http://www.w3.org/2002/07/owl#sameAs> <https://data.federatief.datastelsel.nl/lock-unlock/nhr/id/inschrijving/b9167525-f4ee-4a93-9aa1-6ee1d4b7bbf0> .
-<https://data.federatief.datastelsel.nl/lock-unlock/anbi/id/instelling/00024a86-b284-4f94-9aa9-2e9a9ec25e5d> <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/dossierNummer> "58105452"^^<http://www.w3.org/2001/XMLSchema#integer> .
-<https://data.federatief.datastelsel.nl/lock-unlock/anbi/id/instelling/00024a86-b284-4f94-9aa9-2e9a9ec25e5d> <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/fiscaalNummer> "442150511"^^<http://www.w3.org/2001/XMLSchema#integer> .
-<https://data.federatief.datastelsel.nl/lock-unlock/anbi/id/instelling/00024a86-b284-4f94-9aa9-2e9a9ec25e5d> <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/rsin> "90786"^^<http://www.w3.org/2001/XMLSchema#integer> .
-<https://data.federatief.datastelsel.nl/lock-unlock/anbi/id/instelling/00024a86-b284-4f94-9aa9-2e9a9ec25e5d> <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/vorm> "Stichting" .
+@prefix policy: <https://labs.kadaster.nl/unlocked/data/anbi.auth#>.
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix sse:    <https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/>.
+
+[] sse:has_data_file "https://github.com/kadaster-labs/lock-unlock-testdata/raw/99edc7b4121a14b1c0c17b8f9e97d8f80644d7b8/testdata-anbi/data.zip".
+
+policy:h_de_vries
+    a            sse:SecurityGroup ;
+    rdfs:label   "Henk de Vries" ;
+    sse:has_rule policy:organisatie_vorm .
+
+policy:j_jansen
+    a           sse:SecurityGroup ;
+    rdfs:label  "Jessica Jansen" ;
+    sse:extends policy:h_de_vries .
+
+policy:j_peerenboom
+    a            sse:SecurityGroup ;
+    rdfs:label   "Jeroen Peerenboom" ;
+    sse:extends  policy:j_jansen ;
+    sse:has_rule policy:organisaties_in_almere .
+
+policy:m_groen
+    a            sse:SecurityGroup ;
+    rdfs:label   "Marjolein Groen" ;
+    sse:extends  policy:j_jansen ;
+    sse:has_rule policy:organisaties_in_zeewolde .
+
+policy:f_van_as
+    a            sse:SecurityGroup ;
+    rdfs:label   "Ferdinand van As" ;
+    sse:extends  policy:j_peerenboom, policy:m_groen ;
+    sse:has_rule policy:nhr_linkset .
+
+policy:organisatie_vorm
+    a             sse:AccessRule ;
+    sse:subject   """
+        ?instelling a <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/Instelling>;
+                    <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/vorm> ?rechtsvorm.
+    """ ;
+    sse:condition "" .
+
+policy:organisaties_in_almere
+    a sse:AccessRule;
+    sse:subject "?instelling ?predicate ?value.";
+    sse:condition "?instelling a <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/Instelling>; <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/vestigingsPlaats> <https://brk.basisregistraties.overheid.nl/brk2/id/kadastraleGemeente/25>.".
+
+policy:organisaties_in_zeewolde
+    a sse:AccessRule;
+    sse:subject "?instelling ?predicate ?value.";
+    sse:condition "?instelling a <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/Instelling>; <https://data.federatief.datastelsel.nl/lock-unlock/anbi/def/vestigingsPlaats> <https://brk.basisregistraties.overheid.nl/brk2/id/kadastraleGemeente/1156>.".
+
+policy:alle_organisatiegegevens
+    a             sse:AccessRule ;
+    sse:subject   "?instelling ?predicate ?value." ;
+    sse:condition "" .

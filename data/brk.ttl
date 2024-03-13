@@ -1,0 +1,135 @@
+@prefix policy: <https://labs.kadaster.nl/unlocked/data/brk.auth#>.
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix sse:    <https://data.federatief.datastelsel.nl/lock-unlock/authorisation/model/def/>.
+
+[] sse:has_data_file "https://github.com/kadaster-labs/lock-unlock-testdata/raw/99edc7b4121a14b1c0c17b8f9e97d8f80644d7b8/testdata-brk/data.zip" .
+
+policy:h_de_vries
+    a            sse:SecurityGroup ;
+    rdfs:label   "Henk de Vries" ;
+    sse:has_rule policy:gemeenteaanduidingen, policy:koopsom, policy:percelen, policy:schema .
+
+policy:j_jansen
+    a            sse:SecurityGroup ;
+    rdfs:label   "Jessica Jansen" ;
+    sse:extends  policy:h_de_vries ;
+    sse:has_rule policy:koopsom_jaar .
+
+policy:j_peerenboom
+    a            sse:SecurityGroup ;
+    rdfs:label   "Jeroen Peerenboom" ;
+    sse:extends  policy:j_jansen ;
+    sse:has_rule policy:percelen_almere, policy:personen, policy:persoonsidentificatie .
+
+policy:m_groen
+    a            sse:SecurityGroup ;
+    rdfs:label   "Marjolein Groen" ;
+    sse:extends  policy:j_jansen ;
+    sse:has_rule policy:percelen_zeewolde, policy:personen, policy:persoonsidentificatie .
+
+policy:f_van_as
+    a            sse:SecurityGroup ;
+    rdfs:label   "Ferdinand van As" ;
+    sse:extends  policy:j_jansen ;
+    sse:has_rule policy:bedrag_identificatie, policy:percelen_nationaal, policy:personen, policy:persoonsidentificatie,
+                 policy:tenaamstellingen, policy:zakelijke_rechten .
+
+
+policy:bedrag_identificatie
+    a             sse:AccessRule ;
+    sse:subject   "?bedrag <http://modellen.geostandaarden.nl/def/nen3610-2022#identificatie> ?identificatie." ;
+    sse:condition "?bedrag a <http://modellen.geostandaarden.nl/def/imx-geo#Bedrag>." .
+
+policy:gemeenteaanduidingen
+    a           sse:AccessRule ;
+    sse:subject "?node <http://www.w3.org/2000/01/rdf-schema#label> ?name." ;
+    sse:condition "FILTER (strstarts(str(?node), 'https://brk.basisregistraties.overheid.nl/brk2/id/kadastraleGemeente/'))" .
+
+policy:koopsom
+    a             sse:AccessRule ;
+    sse:subject   """
+        ?perceel <http://modellen.geostandaarden.nl/def/imx-geo#laatsteKoopsom> ?koopsom.
+        ?koopsom a <http://modellen.geostandaarden.nl/def/imx-geo#Bedrag>;
+                 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> ?value;
+                 <http://modellen.geostandaarden.nl/def/nen3610-2022#domein> ?domein.
+    """ ;
+    sse:condition "" .
+
+policy:koopsom_jaar
+    a             sse:AccessRule ;
+    sse:subject   "?perceel <http://modellen.geostandaarden.nl/def/imx-geo#year> ?year." ;
+    sse:condition "?perceel <http://modellen.geostandaarden.nl/def/imx-geo#laatsteKoopsom> ?bedrag." .
+
+policy:percelen
+    a             sse:AccessRule ;
+    sse:subject   """
+        ?perceel a <http://modellen.geostandaarden.nl/def/imx-geo#Perceel>;
+                 <http://modellen.geostandaarden.nl/def/imx-geo#begrenzing> ?begrenzing;
+                 <https://brk.basisregistraties.overheid.nl/brk2/def/kadastraleGemeente> ?gemeente.
+        ?begrenzing ?begrenzingPredicate ?begrenzingObject.
+    """ ;
+    sse:condition "" .
+
+policy:percelen_almere
+    a             sse:AccessRule ;
+    sse:subject   """
+        ?perceel <https://brk.basisregistraties.overheid.nl/brk2/def/kadastraleAanduiding> ?aanduiding.
+        ?aanduiding ?aanduidingPredicate ?aanduidingObject.
+    """ ;
+    sse:condition """
+        ?perceel a <http://modellen.geostandaarden.nl/def/imx-geo#Perceel>;
+                 <https://brk.basisregistraties.overheid.nl/brk2/def/kadastraleGemeente> <https://brk.basisregistraties.overheid.nl/brk2/id/kadastraleGemeente/25>.
+    """ .
+
+policy:percelen_nationaal
+    a             sse:AccessRule ;
+    sse:subject   """
+        ?perceel <https://brk.basisregistraties.overheid.nl/brk2/def/kadastraleAanduiding> ?aanduiding.
+        ?aanduiding ?aanduidingPredicate ?aanduidingObject.
+    """ ;
+    sse:condition "?perceel a <http://modellen.geostandaarden.nl/def/imx-geo#Perceel>." .
+
+
+policy:percelen_zeewolde
+    a             sse:AccessRule ;
+    sse:subject   """
+        ?perceel <https://brk.basisregistraties.overheid.nl/brk2/def/kadastraleAanduiding> ?aanduiding.
+        ?aanduiding ?aanduidingPredicate ?aanduidingObject.
+    """ ;
+    sse:condition """
+        ?perceel a <http://modellen.geostandaarden.nl/def/imx-geo#Perceel>;
+                 <https://brk.basisregistraties.overheid.nl/brk2/def/kadastraleGemeente> <https://brk.basisregistraties.overheid.nl/brk2/id/kadastraleGemeente/1156>.
+    """ .
+
+policy:personen
+    a sse:AccessRule;
+    sse:subject "?persoon ?predicate ?object.";
+    sse:condition "?persoon a <https://data.labs.kadaster.nl/lock-unlock/brk/def/Persoon>.".
+
+policy:persoonsidentificatie
+    a sse:AccessRule;
+    sse:subject "?persoon <http://modellen.geostandaarden.nl/def/nen3610-2022#identificatie> ?id.";
+    sse:condition "FILTER (strstarts(str(?persoon), 'https://data.federatief.datastelsel.nl/lock-unlock/brp/id/geregistreerd-persoon/')).".
+
+policy:schema
+    a           sse:AccessRule ;
+    sse:subject "?node ?predicate ?object." ;
+    sse:condition """
+                ?node a ?type.
+                FILTER (?type IN (
+                    <http://www.w3.org/2002/07/owl#Class>,
+                    <http://www.w3.org/2002/07/owl#DatatypeProperty>,
+                    <http://www.w3.org/2002/07/owl#ObjectProperty>,
+                    <http://www.w3.org/2002/07/owl#NamedIndividual>
+                )) .
+    """.
+
+policy:tenaamstellingen
+    a sse:AccessRule;
+    sse:subject "?tenaamstelling ?predicate ?object.";
+    sse:condition "?tenaamstelling a <https://data.labs.kadaster.nl/lock-unlock/brk/def/Tenaamstelling>.".
+
+policy:zakelijke_rechten
+    a sse:AccessRule;
+    sse:subject "?zakelijkRecht ?predicate ?object.";
+    sse:condition "?zakelijkRecht a <https://data.labs.kadaster.nl/lock-unlock/brk/def/ZakelijkRecht>.".
