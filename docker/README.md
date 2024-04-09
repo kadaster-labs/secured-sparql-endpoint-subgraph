@@ -19,7 +19,7 @@ $ docker pull <azure-container-registry>/lock-unlock/rewrite:0.0.1
 Local build (run in the root of this repo):
 
 ```bash
-$ docker build --build-arg LOCK_UNLOCK_VERSION=0.0.1-SNAPSHOT -t lock-unlock/subgraph:0.0.1 -f docker/Dockerfile .
+$ docker build --build-arg LOCK_UNLOCK_VERSION=0.0.1 -t lock-unlock/subgraph:0.0.1 -f docker/Dockerfile .
 ```
 
 Running (just) the docker container:
