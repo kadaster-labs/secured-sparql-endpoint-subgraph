@@ -25,5 +25,5 @@ $ docker build --build-arg LOCK_UNLOCK_VERSION=0.0.1-SNAPSHOT -t lock-unlock/sub
 Running (just) the docker container:
 
 ```bash
-$ docker run -i --rm -p "8080:8080" --name LockUnlockSubgraphServer -t lock-unlock/subgraph:0.0.1 --mem /ds
+$ docker run -i --rm -p "8080:8080" --name LockUnlockSubgraphServer -t lock-unlock/subgraph:0.0.1
 ```
