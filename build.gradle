@@ -4,7 +4,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.4'
 }
 
-group = 'nl.kadaster.labs.unlocked'
+group = 'nl.kadaster.labs.lock_unlock'
 version = '0.0.1'
 
 // application {
