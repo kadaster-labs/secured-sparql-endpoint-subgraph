@@ -47,7 +47,7 @@ jobs:
           context: .
           file: docker/Dockerfile
           build-args: |
-            LOCK_UNLOCK_VERSION=${{ steps.mvn.outputs.version }}
+            LOCK_UNLOCK_VERSION=${{ steps.gradle.outputs.version }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
