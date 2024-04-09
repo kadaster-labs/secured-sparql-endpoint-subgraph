@@ -24,7 +24,7 @@ RUN echo && echo "==== Docker build for Lock-Unlock Subgraph ${LOCK_UNLOCK_VERSI
 ## -- Build lock-unlock-subgraph jar.
 WORKDIR /build
 COPY . .
-RUN ./gradlew build -x test
+RUN ./gradlew build
 
 RUN cp build/libs/${LOCK_UNLOCK_JAR} ${RUN_DIR}/${LOCK_UNLOCK_JAR}
 
