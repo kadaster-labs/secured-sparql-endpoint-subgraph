@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'nl.kadaster.labs.unlocked'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 
 // application {
 //     mainClass = 'nl.kadaster.labs.unlocked.securedsparqlendpoint.SSEApplication'  
